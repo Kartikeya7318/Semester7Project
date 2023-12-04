@@ -58,7 +58,7 @@ class RecyclerViewAdapter(
         holder.titleTextView.text = item.title
         holder.descriptionTextView.text = item.description
         holder.priceTextView.text = "\u20B9" + item.price.toString()
-        holder.quantityTextView.text = item.quantity.toString()
+        holder.quantityTextView.text = item.weight.toString()
 
 
         // Use Glide to load the image from the URL
@@ -82,7 +82,9 @@ class RecyclerViewAdapter(
         }
     }
 
-
+    fun getCounterMap(): Map<Int, Int> {
+        return counterMap
+    }
     override fun getItemCount(): Int {
         return data.size
     }

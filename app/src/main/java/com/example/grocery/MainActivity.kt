@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.Serializable
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var navView: NavigationView
     // Initialize Firestore
     private lateinit var firestore :FirebaseFirestore
+    private lateinit var dummyData: ArrayList<DummyDataItem>
+    private lateinit var adapter:RecyclerViewAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -51,13 +54,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
-        var dummyData: ArrayList<DummyDataItem> = ArrayList();
+        dummyData = ArrayList();
         dummyData.add(DummyDataItem(
             id = 1,
             title = "Product 1",
             category = "Vegetables",
             imageUrl = "https://example.com/product1.jpg",
-            quantity = 10,
+            quantity = "10",
             price = 5,
             description = "Fresh and organic vegetables",
             rating = 4.5f,
@@ -70,7 +73,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             title = "Product 2",
             category = "Fruits",
             imageUrl = "https://example.com/product2.jpg",
-            quantity = 8,
+            quantity = "8",
             price = 8,
             description = "Assorted fruits pack",
             rating = 4.2f,
@@ -83,7 +86,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             title = "Product 3",
             category = "Dairy",
             imageUrl = "https://example.com/product3.jpg",
-            quantity = 15,
+            quantity = "8",
             price = 3,
             description = "Fresh milk",
             rating = 4.0f,
@@ -95,7 +98,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-        val adapter = RecyclerViewAdapter(this, dummyData)
+        adapter = RecyclerViewAdapter(this, dummyData)
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = adapter
@@ -119,8 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 // Replace with navigation to CategoriesFragment or CategoriesActivity
             }
             R.id.nav_cart -> {
-                // Handle cart click
-                // Replace with navigation to CartFragment or CartActivity
+                startCartActivity();
             }
             R.id.nav_order -> {
                 // Handle order click
@@ -134,6 +136,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
+
+    private fun startCartActivity() {
+        val counterMap = adapter.getCounterMap()
+        val intent = Intent(this@MainActivity, CartActivity::class.java)
+        intent.putExtra("data", dummyData)
+        intent.putExtra("counterMap", counterMap as Serializable) // Convert counter map to int array
+        startActivity(intent)
+
+    }
+
     private fun logoutUser() {
         // Use FirebaseAuth to sign out the user
         FirebaseAuth.getInstance().signOut()
